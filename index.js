@@ -10,14 +10,20 @@ class Sprite {
     constructor({position, velocity}) {
         this.position = position
         this.velocity = velocity
+        this.height = 150
+        this.width = 50
     }
     draw() {
         c.fillStyle = 'red'
-        c.fillRect(this.position.x,this.position.y,50,150)
+        c.fillRect(this.position.x,this.position.y,this.width,this.height)
     }
     update() {
         this.draw()
-        this.position.y += 10
+        this.position.y += this.velocity.y
+
+        if(this.position.y + this.height + this.velocity.y >= canvas.height) {
+            this.velocity.y = 0
+        }
     }
 }
 const player = new Sprite({
@@ -27,7 +33,7 @@ const player = new Sprite({
     },
     velocity: {
         x: 0,
-        y: 0,
+        y: 10,
     }
 }) 
 const player2 = new Sprite({
@@ -37,13 +43,16 @@ const player2 = new Sprite({
     },
     velocity: {
         x: 0,
-        y: 0,
+        y: 10,
     }
 }) 
-player.draw()
-player2.draw()
+// player.draw()
+// player2.draw()
 
 function animation() {
     window.requestAnimationFrame(animation)
+    c.clearRect(0,0,canvas.width,canvas.height)
+    player.update()
+    player2.update()
 }
 animation()
