@@ -12,6 +12,7 @@ class Sprite {
         this.velocity = velocity
         this.height = 150
         this.width = 50
+        this.lastKey
     }
     draw() {
         c.fillStyle = 'blue'
@@ -65,23 +66,26 @@ const keys = {
         pressed: false
     }
 }
+let lastKey
 function animation() {
     window.requestAnimationFrame(animation)
     c.fillStyle = 'black'
     c.fillRect(0,0,canvas.width,canvas.height)
     player.update()
     player2.update()
-    if(keys.a.pressed == true) {
+    player.velocity.x = 0
+    player2.velocity.x = 0
+    if(keys.a.pressed == true){ //&& player.lastKey == 'a') {
         player.velocity.x = -1
-    } else if(keys.d.pressed == true) {
+    } else if(keys.d.pressed == true){ //&& player.lastKey == 'd') {
         player.velocity.x = 1
     } else {
         player.velocity.x = 0
     }
 
-    if(keys.ArrowLeft.pressed == true) {
+    if(keys.ArrowLeft.pressed == true){ //&& player2.lastKey == 'ArrowLeft') {
         player2.velocity.x = -1
-    } else if(keys.ArrowRight.pressed == true) {
+    } else if(keys.ArrowRight.pressed == true){ //&& player2.lastKey == 'ArrowRight') {
         player2.velocity.x = 1
     } else {
         player2.velocity.x = 0
