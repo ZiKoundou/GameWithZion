@@ -5,18 +5,28 @@ canvas.width = 1024
 canvas.height = 576
 
 c.fillRect(0, 0, canvas.width, canvas.height)
-const gravity = .2
+const gravity = .9
 class Sprite {
-    constructor({position, velocity}) {
+    constructor({position, velocity, color = 'blue'}) {
         this.position = position
         this.velocity = velocity
         this.height = 150
         this.width = 50
         this.lastKey
+        this.attackBox = {
+            position: this.position ,
+            width: 100,
+            height: 50,
+        }
+        this.color = color
+        this.isAttacking
     }
     draw() {
-        c.fillStyle = 'blue'
+        c.fillStyle = this.color
         c.fillRect(this.position.x,this.position.y,this.width,this.height)
+
+        c.fillStyle = 'white'
+        c.fillRect(this.attackBox.position.x,this.attackBox.position.y,this.attackBox.width,this.attackBox.height)
     }
     update() {
         this.draw()
@@ -29,10 +39,17 @@ class Sprite {
             this.velocity.y += gravity
         }
     }
+    attack() {
+        this.switchSprite('attack1')
+        this.isAttacking = true
+        setTimeout(()=> {
+            this.isAttacking = false
+        },100)
+    }
 }
 const player = new Sprite({
     position: {
-        x: 5,
+        x: 20,
         y: 0,
     },
     velocity: {
@@ -42,13 +59,14 @@ const player = new Sprite({
 }) 
 const player2 = new Sprite({
     position: {
-        x: 970,
+        x: 955,
         y: 200,
     },
     velocity: {
         x: 0,
         y: 10,
-    }
+    },
+    color: 'white'
 }) 
 // player.draw()
 // player2.draw()
@@ -76,20 +94,22 @@ function animation() {
     player.velocity.x = 0
     player2.velocity.x = 0
     if(keys.a.pressed == true){ //&& player.lastKey == 'a') {
-        player.velocity.x = -1
+        player.velocity.x = -10
     } else if(keys.d.pressed == true){ //&& player.lastKey == 'd') {
-        player.velocity.x = 1
+        player.velocity.x = 10
     } else {
         player.velocity.x = 0
     }
 
     if(keys.ArrowLeft.pressed == true){ //&& player2.lastKey == 'ArrowLeft') {
-        player2.velocity.x = -1
+        player2.velocity.x = -10
     } else if(keys.ArrowRight.pressed == true){ //&& player2.lastKey == 'ArrowRight') {
-        player2.velocity.x = 1
+        player2.velocity.x = 10
     } else {
         player2.velocity.x = 0
     }
+
+    
 }
 animation()
 window.addEventListener('keydown', (event) => {
@@ -105,7 +125,7 @@ window.addEventListener('keydown', (event) => {
             player.lastkey = 'a'
             break
         case 'w':
-            player.velocity.y -= 10
+            player.velocity.y -= 20
             break
         case 'c':
             player.attack()
@@ -121,7 +141,7 @@ window.addEventListener('keydown', (event) => {
             player2.lastkey = 'ArrowLeft'
             break
         case 'ArrowUp':
-            player2.velocity.y -= 10
+            player2.velocity.y -= 20
             break
         case '.':
             // player2.isAttacking = true;
