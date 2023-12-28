@@ -7,14 +7,18 @@ canvas.height = 576
 c.fillRect(0, 0, canvas.width, canvas.height)
 const gravity = .9
 class Sprite {
-    constructor({position, velocity, color = 'blue'}) {
+    constructor({position, velocity, color = 'blue', offset}) {
         this.position = position
         this.velocity = velocity
         this.height = 150
         this.width = 50
         this.lastKey
         this.attackBox = {
-            position: this.position ,
+            position: {
+                x: this.position.x,
+                y: this.position.y
+            },
+            offset,
             width: 100,
             height: 50,
         }
@@ -25,11 +29,16 @@ class Sprite {
         c.fillStyle = this.color
         c.fillRect(this.position.x,this.position.y,this.width,this.height)
 
-        c.fillStyle = 'white'
-        c.fillRect(this.attackBox.position.x,this.attackBox.position.y,this.attackBox.width,this.attackBox.height)
+        if(this.isAttacking == true) {
+            c.fillStyle = 'white'
+            c.fillRect(this.attackBox.position.x,this.attackBox.position.y,this.attackBox.width,this.attackBox.height)
+        }
+        
     }
     update() {
         this.draw()
+        this.attackBox.position.x = this.position.x - this.attackBox.offset.x
+        this.attackBox.position.y = this.position.y - this.attackBox.offset.y
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
 
@@ -40,7 +49,7 @@ class Sprite {
         }
     }
     attack() {
-        this.switchSprite('attack1')
+        // this.switchSprite('attack1')
         this.isAttacking = true
         setTimeout(()=> {
             this.isAttacking = false
@@ -55,7 +64,11 @@ const player = new Sprite({
     velocity: {
         x: 0,
         y: 10,
-    }
+    },
+    offset: {
+        x: 0,
+        y: 0
+    },
 }) 
 const player2 = new Sprite({
     position: {
@@ -65,6 +78,10 @@ const player2 = new Sprite({
     velocity: {
         x: 0,
         y: 10,
+    },
+    offset: {
+        x: 50,
+        y: 0
     },
     color: 'white'
 }) 
@@ -85,6 +102,16 @@ const keys = {
     }
 }
 let lastKey
+function collision({
+    rectangle1,
+    rectangle2
+}) {
+    if(rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x && rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width 
+        && rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y && rectangle1.attackBox.position.y < rectangle2.position.y + rectangle2.height) {
+            return true;
+    }
+    return false;
+}
 function animation() {
     window.requestAnimationFrame(animation)
     c.fillStyle = 'black'
@@ -107,6 +134,20 @@ function animation() {
         player2.velocity.x = 10
     } else {
         player2.velocity.x = 0
+    }
+    //attack
+    if(collision({
+        rectangle1: player,
+        rectangle2: player2
+    }) && player.isAttacking) {
+        player.isAttacking = false
+    } 
+    //attack for player2
+    if(collision({
+        rectangle1: player2,
+        rectangle2: player
+    }) && player2.isAttacking) {
+        player2.isAttacking = false
     }
 
     
